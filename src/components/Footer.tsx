@@ -1,4 +1,5 @@
-import { Heart, Star } from "lucide-react";
+import { Star } from "lucide-react";
+import Image from "next/image";
 
 const GithubIcon = ({ className }: { className?: string }) => (
   <svg
@@ -18,7 +19,7 @@ export function Footer() {
 
         {/* Credits Pill */}
         <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/10 shadow-lg shadow-black/50">
-          <img
+          <Image
             src="https://github.com/LorenzoPasquali.png"
             alt="Lorenzo Pasquali"
             width={24}

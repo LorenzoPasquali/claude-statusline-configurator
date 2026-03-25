@@ -1,7 +1,7 @@
 "use client";
 
 import { useConfig } from "@/store/useConfig";
-import { formatSegments, MODULE_COLORS } from "@/lib/formatter";
+import { formatSegments } from "@/lib/formatter";
 import { useEffect, useState, useRef } from "react";
 import { Terminal } from "lucide-react";
 

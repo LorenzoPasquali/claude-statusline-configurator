@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, ChevronDown, ChevronRight, Settings } from "lucide-react";
+import { GripVertical, ChevronDown, Settings } from "lucide-react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -64,8 +64,7 @@ function SortableItem({ module: m }: { module: ModuleConfig }) {
           ? 'bg-black/30 border-l-[3px] border-white/5 shadow-md hover:shadow-lg'
           : 'bg-black/10 border-white/[0.03] opacity-50'
       }`}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error - dynamic border color
       style={{ ...style, borderLeftColor: m.enabled ? moduleColor : 'transparent' }}
     >
       {/* Main row */}
@@ -158,7 +157,6 @@ function SortableItem({ module: m }: { module: ModuleConfig }) {
 
           {m.id === 'session' ? (
             <div className="flex items-center justify-between py-2 border-b border-white/[0.05]">
-              {/* @ts-ignore - translation property dynamically added */}
               <Label className="text-zinc-400 text-sm cursor-pointer select-none">{t.settings.showResetTime}</Label>
               <TogglePill checked={!!m.showResetTime} onChange={checked => updateModule(m.id, { showResetTime: checked })} />
             </div>
