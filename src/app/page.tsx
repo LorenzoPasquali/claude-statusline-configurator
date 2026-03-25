@@ -4,6 +4,7 @@ import { TerminalPreview } from '@/components/TerminalPreview';
 import { ModuleSelector } from '@/components/ModuleSelector';
 import { GlobalSettings } from '@/components/GlobalSettings';
 import { InstallPanel } from '@/components/InstallPanel';
+import { Footer } from '@/components/Footer';
 import { useI18n } from '@/lib/i18n';
 
 export default function Home() {
@@ -56,6 +57,7 @@ export default function Home() {
         </section>
 
       </main>
+      <Footer />
     </div>
   );
 }
