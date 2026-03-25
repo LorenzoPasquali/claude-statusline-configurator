@@ -4,8 +4,10 @@ import { generateStatuslinePy } from './generator';
 export function generateInstallerScript(globalConfig: GlobalConfig, modules: ModuleConfig[]): string {
   const statuslineCode = generateStatuslinePy(globalConfig, modules);
 
-  // We escape the triple quotes just in case, though the generated code shouldn't have them
-  const safeCode = statuslineCode.replace(/"""/g, '\\"\\"\\"');
+  // Escape backslashes and triple quotes so the Python parser preserves the code safely in the string literal
+  const safeCode = statuslineCode
+    .replace(/\\/g, '\\\\')
+    .replace(/"""/g, '\\"\\"\\"');
 
   return `#!/usr/bin/env python3
 """
