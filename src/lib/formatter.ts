@@ -27,6 +27,17 @@ export const FAKE_DATA = {
   }
 };
 
+// Color map for each module in the terminal preview
+export const MODULE_COLORS: Record<string, string> = {
+  context: '#f59e0b',   // amber
+  session: '#3b82f6',   // blue
+  model: '#a78bfa',     // violet
+  cost: '#34d399',      // emerald
+  git: '#f472b6',       // pink
+  tokens: '#38bdf8',    // sky
+  duration: '#fb923c',  // orange
+};
+
 const renderBar = (mod: ModuleConfig, pct: number) => {
   if (mod.barStyle === 'none') return '';
   const w = mod.barLength || 10;
@@ -38,43 +49,59 @@ const renderBar = (mod: ModuleConfig, pct: number) => {
   return '';
 };
 
-export function formatStatusline(config: GlobalConfig, modules: ModuleConfig[]): string {
-  const enabled = modules.filter(m => m.enabled).sort((a,b) => a.order - b.order);
-  const parts: string[] = [];
+export interface StatusSegment {
+  moduleId: string;
+  text: string;
+}
+
+/** Returns structured segments for rendering colored previews */
+export function formatSegments(config: GlobalConfig, modules: ModuleConfig[]): StatusSegment[] {
+  const enabled = modules.filter(m => m.enabled).sort((a, b) => a.order - b.order);
+  const segments: StatusSegment[] = [];
 
   for (const m of enabled) {
     const str = m.label ? m.label + ' ' : '';
-    
+
+    let text = '';
     if (m.id === 'context') {
       const pct = FAKE_DATA.context_window.used_percentage;
       const bar = renderBar(m, pct);
       const pctText = m.showPercentage ? ` ${pct}%` : '';
       const absText = m.showAbsolute ? ` (${FAKE_DATA.context_window.current_usage.input_tokens} tk)` : '';
-      parts.push((str + bar + pctText + absText).trim());
+      text = (str + bar + pctText + absText).trim();
     } else if (m.id === 'session') {
       const pct = FAKE_DATA.rate_limits.five_hour.used_percentage;
       const bar = renderBar(m, pct);
       const pctText = m.showPercentage ? ` ${pct}%` : '';
-      parts.push((str + bar + pctText).trim());
+      text = (str + bar + pctText).trim();
     } else if (m.id === 'model') {
-      parts.push((str + FAKE_DATA.model.display_name).trim());
+      text = (str + FAKE_DATA.model.display_name).trim();
     } else if (m.id === 'cost') {
-      parts.push((str + `$${FAKE_DATA.cost.total_cost_usd.toFixed(2)}`).trim());
+      text = (str + `$${FAKE_DATA.cost.total_cost_usd.toFixed(2)}`).trim();
     } else if (m.id === 'tokens') {
-      parts.push((str + `in:${FAKE_DATA.context_window.current_usage.input_tokens} out:${FAKE_DATA.context_window.current_usage.output_tokens}`).trim());
+      text = (str + `in:${FAKE_DATA.context_window.current_usage.input_tokens} out:${FAKE_DATA.context_window.current_usage.output_tokens}`).trim();
     } else if (m.id === 'git') {
-      const branch = "main";
-      const staged = "+2";
-      const mod = "~1";
-      // We use html element or styled text for colors, but for raw string we just output Unicode
-      parts.push((str + `🌿 ${branch} ${staged} ${mod}`).trim());
+      text = (str + `🌿 main +2 ~1`).trim();
     } else if (m.id === 'duration') {
       const durationSec = Math.floor(FAKE_DATA.cost.total_duration_ms / 1000);
       const mins = Math.floor(durationSec / 60);
       const secs = durationSec % 60;
-      parts.push((str + `${mins}m ${secs}s`).trim());
+      text = (str + `${mins}m ${secs}s`).trim();
     }
+
+    if (text) segments.push({ moduleId: m.id, text });
   }
-  
-  return parts.filter(Boolean).join(config.defaultSeparator);
+
+  return segments;
+}
+
+/** Returns the preview text for a single module (for inline preview chips) */
+export function getModulePreviewText(m: ModuleConfig): string {
+  const segs = formatSegments({ locale: 'en', encoding: 'utf-8', defaultSeparator: ' | ', defaultBarStyle: 'ascii', defaultBarLength: 10 }, [{ ...m, enabled: true, order: 0 }]);
+  return segs[0]?.text || '';
+}
+
+/** Legacy flat string formatter (used by generator) */
+export function formatStatusline(config: GlobalConfig, modules: ModuleConfig[]): string {
+  return formatSegments(config, modules).map(s => s.text).join(config.defaultSeparator);
 }

@@ -8,28 +8,22 @@ const generateBarCode = (mod: ModuleConfig, pctVar: string) => {
   const width = mod.barLength || 10;
   
   if (mod.barStyle === 'ascii') {
-    return `
-filled = int(${pctVar} * ${width} / 100) if ${pctVar} else 0
-empty = ${width} - filled
-bar_str = f"[{'#' * filled}{'-' * empty}]"`;
+    return `filled = int(${pctVar} * ${width} / 100) if ${pctVar} else 0\nempty = ${width} - filled\nbar_str = f"[{'#' * filled}{'-' * empty}]"`;
   }
   
   if (mod.barStyle === 'unicode') {
-    return `
-filled = int(${pctVar} * ${width} / 100) if ${pctVar} else 0
-empty = ${width} - filled
-bar_str = f"[{'▓' * filled}{'░' * empty}]"`;
+    return `filled = int(${pctVar} * ${width} / 100) if ${pctVar} else 0\nempty = ${width} - filled\nbar_str = f"[{'▓' * filled}{'░' * empty}]"`;
   }
 
   if (mod.barStyle === 'minimal') {
-    return `
-filled = int(${pctVar} * ${width} / 100) if ${pctVar} else 0
-empty = ${width} - filled
-bar_str = f"{'█' * filled}{'░' * empty}"`;
+    return `filled = int(${pctVar} * ${width} / 100) if ${pctVar} else 0\nempty = ${width} - filled\nbar_str = f"{'█' * filled}{'░' * empty}"`;
   }
 
   return 'bar_str = ""';
 };
+
+const indent = (str: string, spaces: number) => 
+  str.split('\n').map(line => ' '.repeat(spaces) + line).join('\n');
 
 const MODULE_GENERATORS: Record<string, ModuleGenerator> = {
   context: (mod) => ({
@@ -54,7 +48,7 @@ rl = data.get("rate_limits", {})
 fh = rl.get("five_hour", {})
 fh_pct = fh.get("used_percentage")
 if fh_pct is not None:
-    ${generateBarCode(mod, 'fh_pct')}
+${indent(generateBarCode(mod, 'fh_pct'), 4)}
     pct_text = f" {int(fh_pct)}%" if ${mod.showPercentage ? 'True' : 'False'} else ""
     parts.append(f"${mod.label} {bar_str}{pct_text}".strip())
 `.trim()
@@ -72,7 +66,7 @@ parts.append(f"${mod.label} {model_name}".strip())
     code: `
 cost_data = data.get("cost", {})
 cost_usd = cost_data.get("total_cost_usd", 0)
-parts.append(f"${mod.label} $${'{cost_usd:.2f}'}".strip())
+parts.append((f"${mod.label} $" + f"{cost_usd:.2f}").strip())
 `.trim()
   }),
   tokens: (mod) => ({

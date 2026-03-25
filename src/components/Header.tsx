@@ -1,7 +1,7 @@
 "use client";
 import { useI18n } from '@/lib/i18n';
 import { Button } from './ui/button';
-import { Github } from 'lucide-react';
+import { GitBranch } from 'lucide-react';
 
 export function Header() {
   const { locale, toggleLocale } = useI18n();
@@ -19,11 +19,9 @@ export function Header() {
           <Button variant="ghost" size="sm" onClick={toggleLocale} className="text-white/70 hover:text-white">
             {locale === 'pt' ? '🇺🇸 EN' : '🇧🇷 PT'}
           </Button>
-          <Button variant="ghost" size="icon" asChild className="text-white/70 hover:text-white rounded-full">
-            <a href="https://github.com" target="_blank" rel="noreferrer">
-              <Github className="w-5 h-5" />
-            </a>
-          </Button>
+          <a href="https://github.com" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center p-2 text-white/70 hover:text-white rounded-full hover:bg-white/10 transition-colors">
+            <GitBranch className="w-5 h-5" />
+          </a>
         </div>
       </div>
     </header>

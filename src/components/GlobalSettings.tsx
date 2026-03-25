@@ -31,7 +31,7 @@ export function GlobalSettings() {
           <Label className="text-zinc-400">{t.settings.encoding}</Label>
           <Select 
             value={global.encoding} 
-            onValueChange={(val: string) => setGlobal({ encoding: val as 'utf-8' | 'ascii' })}
+            onValueChange={(val) => setGlobal({ encoding: val as 'utf-8' | 'ascii' })}
           >
             <SelectTrigger className="bg-black/40 border-white/10">
               <SelectValue />

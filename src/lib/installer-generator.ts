@@ -13,11 +13,11 @@ Claude Statusline Configurator — Installer
 Generated: ${new Date().toISOString()}
 Site: https://csc.vercel.app
 """
-import os, sys, json, platform, textwrap
+import os, sys, json, platform
 
-STATUSLINE_CODE = textwrap.dedent("""\\
-${safeCode.split('\\n').map(line => '    ' + line).join('\\n')}
-""")
+STATUSLINE_CODE = """\\
+${safeCode}
+"""
 
 def main():
     print()
