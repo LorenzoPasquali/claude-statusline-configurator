@@ -58,13 +58,11 @@ function SortableItem({ module: m }: { module: ModuleConfig }) {
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className={`relative rounded-xl border transition-all duration-300 ${
         m.enabled
           ? 'bg-black/30 border-l-[3px] border-white/5 shadow-md hover:shadow-lg'
           : 'bg-black/10 border-white/[0.03] opacity-50'
       }`}
-      // @ts-expect-error - dynamic border color
       style={{ ...style, borderLeftColor: m.enabled ? moduleColor : 'transparent' }}
     >
       {/* Main row */}
