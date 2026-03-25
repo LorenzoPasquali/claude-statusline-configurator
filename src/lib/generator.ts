@@ -47,10 +47,19 @@ parts.append(f"${mod.label} {bar_str}{pct_text}{abs_text}".strip())
 rl = data.get("rate_limits", {})
 fh = rl.get("five_hour", {})
 fh_pct = fh.get("used_percentage")
+resets_at = fh.get("resets_at")
 if fh_pct is not None:
 ${indent(generateBarCode(mod, 'fh_pct'), 4)}
     pct_text = f" {int(fh_pct)}%" if ${mod.showPercentage ? 'True' : 'False'} else ""
-    parts.append(f"${mod.label} {bar_str}{pct_text}".strip())
+    reset_text = ""
+    if ${mod.showResetTime ? 'True' : 'False'} and resets_at:
+        now = int(time.time())
+        diff = resets_at - now
+        if diff > 0:
+            hr = diff // 3600
+            mn = (diff % 3600) // 60
+            reset_text = f" ↻{hr}h{mn}m"
+    parts.append(f"${mod.label} {bar_str}{pct_text}{reset_text}".strip())
 `.trim()
   }),
   model: (mod) => ({
@@ -148,6 +157,14 @@ if branch:
     repo_status = f" {staged_str} {mod_str}".strip()
     parts.append(f"${mod.label} 🌿 {branch} {repo_status}".strip())
 `.trim()
+  }),
+  cwd: (mod) => ({
+    imports: [],
+    code: `
+cwd = data.get("workspace", {}).get("current_dir", "")
+if cwd:
+    parts.append(f"${mod.label} {cwd}".strip())
+`.trim()
   })
 };
 
@@ -156,21 +173,38 @@ export function generateStatuslinePy(config: GlobalConfig, modules: ModuleConfig
     .filter(m => m.enabled)
     .sort((a, b) => a.order - b.order);
 
+  // Auto-detect encoding: use utf-8 if any module uses unicode/minimal bars
+  const needsUtf8 = enabledModules.some(m => m.barStyle === 'unicode' || m.barStyle === 'minimal');
+  const encoding = needsUtf8 ? 'utf-8' : (config.encoding || 'utf-8');
+
   const imports = new Set(["sys", "json", "time"]);
   const blocks: string[] = [];
+
+  const hexToRgb = (hex: string) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r};${g};${b}`;
+  };
 
   for (const mod of enabledModules) {
     const generator = MODULE_GENERATORS[mod.id];
     if (generator) {
       const result = generator(mod, config);
       result.imports.forEach(i => imports.add(i));
-      blocks.push(result.code);
+      
+      const rgb = hexToRgb(mod.color || '#ffffff');
+      const coloredCode = result.code.replace(
+        /parts\.append\((.*)\)/g, 
+        `parts.append(f"\\033[38;2;${rgb}m" + ($1) + "\\033[0m")`
+      );
+      blocks.push(coloredCode);
     }
   }
 
   return `import ${Array.from(imports).join(", ")}
 
-sys.stdout.reconfigure(encoding="${config.encoding || 'utf-8'}")
+sys.stdout.reconfigure(encoding="${encoding}")
 
 data = {}
 try:

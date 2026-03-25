@@ -20,7 +20,7 @@ function CodeWithCopy({ text, scrollable }: { text: string; scrollable?: boolean
   return (
     <div className="w-full space-y-2">
       <div
-        className={`w-full bg-black/60 p-4 rounded-lg font-mono text-xs text-green-400 border border-white/10 custom-scrollbar ${
+        className={`w-full bg-black/60 p-4 rounded-lg font-mono text-xs text-orange-400 border border-white/10 custom-scrollbar ${
           scrollable ? 'max-h-52 overflow-auto whitespace-pre' : 'overflow-x-auto whitespace-nowrap'
         }`}
       >
@@ -32,7 +32,7 @@ function CodeWithCopy({ text, scrollable }: { text: string; scrollable?: boolean
         onClick={doCopy}
         className="w-full h-8 bg-white/5 hover:bg-white/10 border-white/10 text-zinc-400 hover:text-white text-xs flex items-center justify-center gap-2"
       >
-        {copied ? <><Check className="w-3.5 h-3.5 text-green-400" /> Copiado!</> : <><Copy className="w-3.5 h-3.5" /> Copiar comando</>}
+        {copied ? <><Check className="w-3.5 h-3.5 text-orange-400" /> Copiado!</> : <><Copy className="w-3.5 h-3.5" /> Copiar comando</>}
       </Button>
     </div>
   );
@@ -45,7 +45,9 @@ export function InstallPanel() {
 
   useEffect(() => {
     const json = JSON.stringify({ g: global, m: modules });
-    const b = btoa(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    const bytes = new TextEncoder().encode(json);
+    const binStr = Array.from(bytes, (b) => String.fromCharCode(b)).join('');
+    const b = btoa(binStr).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     setB64(b);
   }, [global, modules]);
 
@@ -60,8 +62,7 @@ export function InstallPanel() {
   const settingsJson = `"statusLine": {\n  "type": "command",\n  "command": "python3 ~/.claude/statusline.py"\n}`;
 
   return (
-    <Card className="bg-black/30 backdrop-blur border-white/10 shadow-xl relative w-full overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-600" />
+    <Card className="bg-black/30 backdrop-blur border-orange-500/10 shadow-xl relative w-full overflow-hidden">
       <CardContent className="p-6 w-full max-w-full min-w-0">
         <Tabs defaultValue="auto" className="w-full">
           <TabsList className="flex w-full bg-black/40 border border-white/5 mb-6 rounded-lg p-1">
@@ -86,7 +87,7 @@ export function InstallPanel() {
               <CodeWithCopy text={winCmd} />
             </div>
 
-            <div className="p-3 bg-blue-950/20 border border-blue-500/20 rounded-lg text-xs text-blue-300/80">
+            <div className="p-3 bg-orange-950/20 border border-orange-500/20 rounded-lg text-xs text-orange-300/80">
               {t.install.inspectHint}
             </div>
           </TabsContent>

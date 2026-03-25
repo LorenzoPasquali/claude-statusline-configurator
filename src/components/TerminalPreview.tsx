@@ -70,10 +70,10 @@ export function TerminalPreview() {
             <span className="flex flex-wrap items-center gap-0">
               {segments.map((seg, i) => (
                 <span key={seg.moduleId} className="flex items-center">
-                  {i > 0 && <span className="text-zinc-600 mx-0">{global.defaultSeparator}</span>}
+                  {i > 0 && <span className="text-zinc-600 whitespace-pre">{global.defaultSeparator}</span>}
                   <span
                     className="font-medium transition-colors duration-300"
-                    style={{ color: MODULE_COLORS[seg.moduleId] || '#a1a1aa' }}
+                    style={{ color: seg.color || '#a1a1aa' }}
                   >
                     {seg.text}
                   </span>

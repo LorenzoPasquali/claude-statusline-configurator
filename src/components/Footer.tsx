@@ -15,7 +15,7 @@ export function Footer() {
   return (
     <footer className="w-full border-t border-white/10 bg-black/40 mt-auto py-10 mt-10">
       <div className="container mx-auto px-4 max-w-5xl flex flex-col items-center justify-center gap-6 text-sm text-zinc-400">
-        
+
         {/* Credits Pill */}
         <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/10 shadow-lg shadow-black/50">
           <img
@@ -26,7 +26,7 @@ export function Footer() {
             className="rounded-full ring-2 ring-white/10"
           />
           <span className="flex items-center gap-1.5">
-            Built with <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> by{' '}
+            Built by{' '}
             <a
               href="https://github.com/LorenzoPasquali"
               target="_blank"

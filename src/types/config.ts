@@ -9,7 +9,9 @@ export interface ModuleConfig {
   barLength: number;             // size of the bar (e.g., 5, 10, 15, 20)
   showPercentage: boolean;       // show "30%"
   showAbsolute: boolean;         // show absolute value (e.g., "300k/1M" or input tokens)
+  showResetTime?: boolean;       // show time until reset for session
   separator: string;             // separator after this module (" | ", " · ", "\n", etc.)
+  color: string;                 // hex color for the module
   customFormat: string | null;   // advanced template (null if not used)
 }
 

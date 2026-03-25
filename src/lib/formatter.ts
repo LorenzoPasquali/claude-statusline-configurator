@@ -36,6 +36,7 @@ export const MODULE_COLORS: Record<string, string> = {
   git: '#f472b6',       // pink
   tokens: '#38bdf8',    // sky
   duration: '#fb923c',  // orange
+  cwd: '#94a3b8',       // slate
 };
 
 const renderBar = (mod: ModuleConfig, pct: number) => {
@@ -52,6 +53,7 @@ const renderBar = (mod: ModuleConfig, pct: number) => {
 export interface StatusSegment {
   moduleId: string;
   text: string;
+  color: string;
 }
 
 /** Returns structured segments for rendering colored previews */
@@ -71,9 +73,18 @@ export function formatSegments(config: GlobalConfig, modules: ModuleConfig[]): S
       text = (str + bar + pctText + absText).trim();
     } else if (m.id === 'session') {
       const pct = FAKE_DATA.rate_limits.five_hour.used_percentage;
+      const resetsAt = FAKE_DATA.rate_limits.five_hour.resets_at;
+      const now = Math.floor(Date.now() / 1000);
+      let resetText = '';
+      if (m.showResetTime && resetsAt && resetsAt > now) {
+        const diff = resetsAt - now;
+        const hr = Math.floor(diff / 3600);
+        const mn = Math.floor((diff % 3600) / 60);
+        resetText = ` ↻${hr}h${mn}m`;
+      }
       const bar = renderBar(m, pct);
       const pctText = m.showPercentage ? ` ${pct}%` : '';
-      text = (str + bar + pctText).trim();
+      text = (str + bar + pctText + resetText).trim();
     } else if (m.id === 'model') {
       text = (str + FAKE_DATA.model.display_name).trim();
     } else if (m.id === 'cost') {
@@ -87,9 +98,11 @@ export function formatSegments(config: GlobalConfig, modules: ModuleConfig[]): S
       const mins = Math.floor(durationSec / 60);
       const secs = durationSec % 60;
       text = (str + `${mins}m ${secs}s`).trim();
+    } else if (m.id === 'cwd') {
+      text = (str + FAKE_DATA.workspace.current_dir).trim();
     }
 
-    if (text) segments.push({ moduleId: m.id, text });
+    if (text) segments.push({ moduleId: m.id, text, color: m.color });
   }
 
   return segments;
