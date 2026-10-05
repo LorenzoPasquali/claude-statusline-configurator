@@ -29,9 +29,9 @@ export function Footer() {
           <span className="flex items-center gap-1.5">
             Built by{' '}
             <a
-              href="https://github.com/LorenzoPasquali"
+              href="https://lorenzopasquali.dev"
               target="_blank"
-              rel="noopener noreferrer"
+              rel="author noopener"
               className="font-medium text-white hover:text-orange-400 transition-colors"
             >
               Lorenzo Pasquali

@@ -8,6 +8,7 @@ const interSans = Inter({subsets:['latin'],variable:'--font-sans'});
 export const metadata: Metadata = {
   title: 'Claude Statusline Configurator',
   description: 'Visually configure your Claude Code terminal status bar.',
+  authors: [{ name: 'Lorenzo Pasquali', url: 'https://lorenzopasquali.dev' }],
 };
 
 export default function RootLayout({
